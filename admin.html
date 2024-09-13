@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Armour Securities Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --background-color: #ecf0f1;
+            --text-color: #333333;
+            --card-background: #ffffff;
+            --border-color: #bdc3c7;
+        }
+
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+        }
+
+        .dashboard {
+            display: none;
+            flex-direction: column;
+            height: 100vh;
+            width: 100vw;
+            background-color: var(--background-color);
+            overflow-y: auto;
+        }
+
+        .dashboard-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .logo img {
+            height: 60px;
+            margin-right: 10px;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            padding: 30px;
+        }
+
+        .team-box {
+            background-color: var(--card-background);
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .team-box:hover {
+            transform: translateY(-5px);
+        }
+
+        .team-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 10px;
+        }
+
+        .team-header h3 {
+            margin: 0;
+            color: var(--primary-color);
+        }
+
+        .task-stats {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            font-weight: bold;
+        }
+
+        .task-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .task-list li {
+            padding: 8px 0;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .task-list li:hover {
+            background-color: #f7f9fa;
+        }
+
+        .bi {
+            margin-right: 10px;
+            font-size: 1.2em;
+            transition: color 0.3s ease;
+        }
+
+        .bi-check-circle-fill {
+            color: #2ecc71;
+        }
+
+        .bi-circle {
+            color: #e74c3c;
+        }
+
+        button {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        #welcomeMessage {
+            font-size: 1.2em;
+            margin: 0;
+        }
+
+        .add-task-form {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f7f9fa;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .add-task-form input, .add-task-form button {
+            margin: 5px 0;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+        }
+
+        .login-form {
+            background-color: var(--card-background);
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            margin: 100px auto;
+        }
+
+        .login-form input {
+            width: 100%;
+            padding: 0.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+
+        .employee-dashboard {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            background-color: var(--card-background);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .team-lead {
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="loginForm" class="login-form">
+            <h2>Login</h2>
+            <input type="text" id="username" placeholder="Username" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <button onclick="login()">Login</button>
+        </div>
+        <div id="dashboard" class="dashboard">
+            <div class="dashboard-header">
+                <div class="logo">
+                    <img src="dashboard_logo.png" alt="Armour Securities Logo">
+                    ARMOUR SECURITIES
+                </div>
+                <h2 id="welcomeMessage"></h2>
+                <button onclick="logout()">Logout</button>
+            </div>
+            <div id="adminDashboard">
+                <div class="team-grid" id="teamGrid"></div>
+            </div>
+            <div id="employeeDashboard" class="employee-dashboard" style="display: none;">
+                <h2>Welcome, <span id="employeeName"></span></h2>
+                <div id="marketingSection">
+                    <h3>Marketing Team</h3>
+                    <p>Team Lead: <span class="team-lead" id="teamLead"></span></p>
+                    <h4>Your Tasks:</h4>
+                    <ul id="employeeTaskList" class="task-list"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const teams = [
+            {
+                name: "Frontend Team",
+                members: ["Akshit S.", "Daksh", "Garima", "Akshit V."],
+                tasks: [
+                    { id: 1, description: "Design login page", completion: true },
+                    { id: 2, description: "Implement sign-up functionality", completion: false },
+                    { id: 3, description: "Create dashboard layout", completion: true },
+                    { id: 4, description: "Optimize for mobile devices", completion: false },
+                    { id: 5, description: "Implement user profile page", completion: false },
+                    { id: 6, description: "Add form validation", completion: true },
+                    { id: 7, description: "Create navigation menu", completion: true },
+                    { id: 8, description: "Implement dark mode", completion: false }
+                ]
+            },
+            {
+                name: "Backend Team",
+                members: ["Aditya", "Ridhima", "Gunn", "Gauri"],
+                tasks: [
+                    { id: 9, description: "Set up database schema", completion: true },
+                    { id: 10, description: "Implement user authentication", completion: true },
+                    { id: 11, description: "Create API endpoints", completion: false },
+                    { id: 12, description: "Optimize database queries", completion: false },
+                    { id: 13, description: "Implement password reset functionality", completion: true },
+                    { id: 14, description: "Set up email notifications", completion: false },
+                    { id: 15, description: "Implement data caching", completion: false },
+                    { id: 16, description: "Create admin dashboard backend", completion: true }
+                ]
+            },
+            {
+                name: "Cybersecurity Team",
+                members: ["Hammad", "Divij", "Dipanshu", "Anirudh"],
+                tasks: [
+                    { id: 17, description: "Test login functionality", completion: true },
+                    { id: 18, description: "Perform security testing", completion: false },
+                    { id: 19, description: "Create test cases for new features", completion: true },
+                    { id: 20, description: "Conduct performance testing", completion: false },
+                    { id: 21, description: "Test mobile responsiveness", completion: true },
+                    { id: 22, description: "Verify API responses", completion: true },
+                    { id: 23, description: "Conduct user acceptance testing", completion: false },
+                    { id: 24, description: "Test cross-browser compatibility", completion: false }
+                ]
+            },
+            {
+                name: "DevOps Team",
+                members: ["Mike Tyson", "Muhammad Ali", "Andrew Tate", "Khali"],
+                tasks: [
+                    { id: 25, description: "Set up CI/CD pipeline", completion: true },
+                    { id: 26, description: "Configure production servers", completion: true },
+                    { id: 27, description: "Implement automated backups", completion: false },
+                    { id: 28, description: "Set up monitoring and alerting", completion: true },
+                    { id: 29, description: "Optimize server performance", completion: false },
+                    { id: 30, description: "Implement containerization", completion: true },
+                    { id: 31, description: "Set up load balancing", completion: false },
+                    { id: 32, description: "Conduct security audits", completion: false }
+                ]
+            }
+        ];
+
+        const users = [
+            { username: 'admin', password: 'admin123', name: 'Admin User', role: 'Admin' },
+            { username: 'emp1', password: 'emp123', name: 'Lord', role: 'Employee' },
+            { username: 'emp2', password: 'emp123', name: 'Bored', role: 'Employee' }
+        ];
+
+        const marketingTeam = {
+            lead: 'Emily Davis',
+            tasks: [
+                { id: 1, title: 'Create social media campaign', description: 'Develop a social media campaign for our new product launch.' },
+                { id: 2, title: 'Analyze website traffic', description: 'Review and report on website traffic for the past month.' },
+                { id: 3, title: 'Update company blog', description: 'Write and publish a new blog post about industry trends.' }
+            ]
+        };
+
+        let currentUser = null;
+
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const user = users.find(u => u.username === username && u.password === password);
+
+            if (user) {
+                currentUser = user;
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'flex';
+                document.getElementById('welcomeMessage').textContent = `Welcome, ${user.name}`;
+
+                if (user.role === 'Admin') {
+                    document.getElementById('adminDashboard').style.display = 'block';
+                    document.getElementById('employeeDashboard').style.display = 'none';
+                    renderAdminDashboard();
+                } else {
+                    document.getElementById('adminDashboard').style.display = 'none';
+                    document.getElementById('employeeDashboard').style.display = 'block';
+                    renderEmployeeDashboard();
+                }
+            } else {
+                alert('Invalid username or password');
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('dashboard').style.display = 'none';
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        }
+
+        function toggleTaskCompletion(taskId) {
+            for (let team of teams) {
+                const task = team.tasks.find(t => t.id === taskId);
+                if (task) {
+                    task.completion = !task.completion;
+                    renderAdminDashboard();
+                    break;
+                }
+            }
+        }
+
+        function addTask(teamIndex) {
+            const taskDescription = document.getElementById(`taskDescription-${teamIndex}`).value;
+            const taskDeadline = document.getElementById(`taskDeadline-${teamIndex}`).value;
+            if (taskDescription && taskDeadline) {
+                const newTaskId = teams[teamIndex].tasks.length + 1;
+                teams[teamIndex].tasks.push({
+                    id: newTaskId,
+                    description: taskDescription,
+                    deadline: taskDeadline,
+                    completion: false
+                });
+                document.getElementById(`taskDescription-${teamIndex}`).value = '';
+                document.getElementById(`taskDeadline-${teamIndex}`).value = '';
+                renderAdminDashboard();
+            } else {
+                alert('Please fill in both fields.');
+            }
+        }
+
+        function renderAdminDashboard() {
+            const teamGrid = document.getElementById('teamGrid');
+            teamGrid.innerHTML = '';
+
+            teams.forEach((team, index) => {
+                const teamBox = document.createElement('div');
+                teamBox.className = 'team-box';
+
+                const completedTasks = team.tasks.filter(task => task.completion).length;
+                const totalTasks = team.tasks.length;
+
+                teamBox.innerHTML = `
+                    <div class="team-header">
+                        <h3>${team.name}</h3>
+                        <div class="task-stats">
+                            ${completedTasks}/${totalTasks} tasks completed
+                        </div>
+                    </div>
+                    <p>Members: ${team.members.join(', ')}</p>
+                    <h4>Tasks:</h4>
+                    <ul class="task-list">
+                        ${team.tasks.map(task => `
+                            <li onclick="toggleTaskCompletion(${task.id})">
+                                <i class="bi ${task.completion ? 'bi-check-circle-fill' : 'bi-circle'}"></i>
+                                ${task.description} (Deadline: ${task.deadline || 'N/A'})
+                            </li>
+                        `).join('')}
+                    </ul>
+                    <div class="add-task-form">
+                        <input type="text" id="taskDescription-${index}" placeholder="Task description">
+                        <input type="date" id="taskDeadline-${index}">
+                        <button onclick="addTask(${index})">Add Task</button>
+                    </div>
+                `;
+
+                teamGrid.appendChild(teamBox);
+            });
+        }
+
+        function renderEmployeeDashboard() {
+            document.getElementById('employeeName').textContent = currentUser.name;
+            document.getElementById('teamLead').textContent = marketingTeam.lead;
+            const taskList = document.getElementById('employeeTaskList');
+            taskList.innerHTML = '';
+            marketingTeam.tasks.forEach(task => {
+                const li = document.createElement('li');
+                li.className = 'task-item';
+                li.innerHTML = `
+                    <h3>${task.title}</h3>
+                    <p>${task.description}</p>
+                `;
+                taskList.appendChild(li);
+            });
+        }
+    </script>
+</body>
+</html>
